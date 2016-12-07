@@ -24,6 +24,58 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class EncryptionUtil {
 
+	public static String getSign(String url){
+		return EncryptionUtil.MD5(url).substring(0, 8);
+	}
+	
+	public static String getPwd(String url){
+		return EncryptionUtil.MD5(url).substring(0, 8);
+	}
+	
+	/**
+	 * 利用MD5进行加密
+	 * 
+	 * @param str
+	 *            待加密的字符串
+	 * @return 加密后的字符串
+	 * @throws NoSuchAlgorithmException
+	 *             没有这种产生消息摘要的算法
+	 * @throws UnsupportedEncodingException
+	 */
+	public static String EncoderByMd5(String str) {
+		// 确定计算方法
+		MessageDigest md5;
+		byte[] b = null;
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+			b = md5.digest(str.getBytes("utf-8"));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		// BASE64Encoder base64en = new BASE64Encoder();
+		// 加密后的字符串
+		// String newstr = base64en.encode(md5.digest(str.getBytes("utf-8")));
+		String result = "";
+
+		// 转换16进制方式
+
+		// 1.
+		// BigInteger bigInteger = new BigInteger(1, b);
+		// return bigInteger.toString(16);
+
+		// 2.
+		for (int i = 0; i < b.length; i++) {
+			String hex = Integer.toHexString(b[i] & 0xFF);
+			if (hex.length() == 1) {
+				hex = '0' + hex;
+			}
+			result += hex.toString();
+		}
+		return result;
+	}
+	
 	/**
 	 * SHA1方式加密
 	 * @param decript

@@ -8,24 +8,24 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.ssl.TrustStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * httpClient工具类
@@ -34,6 +34,19 @@ import org.apache.http.ssl.TrustStrategy;
  *
  */
 public class HttpClientUtil {
+	private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+
+	private static void setBaseHeader(HttpRequestBase http) {
+		http.setHeader("Host", "kyfw.12306.cn");
+		http.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:34.0) Gecko/20100101 Firefox/34.0");
+		http.setHeader("Accept", "*/*");
+		http.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+		http.setHeader("Accept-Encoding", "gzip, deflate");
+		http.setHeader("Referer", "https://kyfw.12306.cn/");
+		http.setHeader("Cookie", "tmp");
+		http.setHeader("Connection", "keep-alive");
+		http.setHeader("Cache-Control", "no-cache");
+	}
 
 	public void HttpGet() {
 
@@ -62,6 +75,10 @@ public class HttpClientUtil {
 		return response;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static CloseableHttpClient createSSLClientDefault() {
 		try {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
@@ -82,42 +99,4 @@ public class HttpClientUtil {
 		return HttpClients.createDefault();
 	}
 
-	// private static SSLConnectionSocketFactory createSSLConnSocketFactory() {
-	// SSLConnectionSocketFactory sslsf = null;
-	// try {
-	// SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null,
-	// new TrustStrategy() {
-	//
-	// public boolean isTrusted(X509Certificate[] chain, String authType) throws
-	// CertificateException {
-	// return true;
-	// }
-	// }).build();
-	// sslsf = new SSLConnectionSocketFactory(sslContext, new
-	// X509HostnameVerifier() {
-	//
-	// @Override
-	// public boolean verify(String arg0, SSLSession arg1) {
-	// return true;
-	// }
-	//
-	// @Override
-	// public void verify(String host, SSLSocket ssl) throws IOException {
-	// }
-	//
-	// @Override
-	// public void verify(String host, X509Certificate cert) throws SSLException
-	// {
-	// }
-	//
-	// @Override
-	// public void verify(String host, String[] cns, String[] subjectAlts)
-	// throws SSLException {
-	// }
-	// });
-	// } catch (GeneralSecurityException e) {
-	// e.printStackTrace();
-	// }
-	// return sslsf;
-	// }
 }
