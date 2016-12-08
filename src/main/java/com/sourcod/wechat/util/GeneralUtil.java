@@ -152,6 +152,12 @@ public class GeneralUtil {
 		xstream.alias("xml", MessageModel.class);
 		return xstream.fromXML(input);
 	}
+	
+	public static String toXml(MessageModel mm) {
+		XStream xstream = new XStream();
+		xstream.alias("xml", MessageModel.class);
+		return xstream.toXML(mm);
+	}
 
 	public static void main(String[] args) throws IOException {
 		MessageModel m = new MessageModel();
