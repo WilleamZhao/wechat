@@ -23,6 +23,7 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,18 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClientUtil {
 	private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
-
-	private static void setBaseHeader(HttpRequestBase http) {
-		http.setHeader("Host", "kyfw.12306.cn");
-		http.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:34.0) Gecko/20100101 Firefox/34.0");
-		http.setHeader("Accept", "*/*");
-		http.setHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-		http.setHeader("Accept-Encoding", "gzip, deflate");
-		http.setHeader("Referer", "https://kyfw.12306.cn/");
-		http.setHeader("Cookie", "tmp");
-		http.setHeader("Connection", "keep-alive");
-		http.setHeader("Cache-Control", "no-cache");
-	}
 
 	public void HttpGet() {
 
@@ -63,19 +52,52 @@ public class HttpClientUtil {
 		HttpResponse response = httpClient.execute(get);
 		return response;
 	}
+	
+	public static HttpResponse HttpsGet(String url, String cookie) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
+		HttpGet get = new HttpGet();
+		get.setURI(new URI(url));
+		get.addHeader(new BasicHeader("Cookie", cookie));
+		HttpResponse response = httpClient.execute(get);
+		return response;
+	}
+
+	public static HttpResponse HttpsPost(String url, List<NameValuePair> nvps, String cookie)
+			throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
+		HttpPost post = new HttpPost();
+		/*
+		 * String menu =
+		 * "{\"button\":[{\"type\":\"click\",\"name\":\"今日歌曲\",\"key\":\"V1001_TODAY_MUSIC\"},{\"name\":\"菜单\",\"sub_button\":[{\"type\":\"view\",\"name\":\"搜索\",\"url\":\"http://www.soso.com/\"},{\"type\":\"view\",\"name\":\"视频\",\"url\":\"http://v.qq.com/\"},{\"type\":\"click\",\"name\":\"赞一下我们\",\"key\":\"V1001_GOOD\"}]}]}";
+		 * post.setEntity(new StringEntity(menu, "UTF-8"));
+		 */
+		post.setEntity(new UrlEncodedFormEntity(nvps));
+		post.addHeader(new BasicHeader("Cookie", cookie));
+		post.setURI(new URI(url));
+		HttpResponse response = httpClient.execute(post);
+		return response;
+	}
 
 	public static HttpResponse HttpsPost(String url, List<NameValuePair> nvps) throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
 		HttpPost post = new HttpPost();
-		String menu = "{\"button\":[{\"type\":\"click\",\"name\":\"今日歌曲\",\"key\":\"V1001_TODAY_MUSIC\"},{\"name\":\"菜单\",\"sub_button\":[{\"type\":\"view\",\"name\":\"搜索\",\"url\":\"http://www.soso.com/\"},{\"type\":\"view\",\"name\":\"视频\",\"url\":\"http://v.qq.com/\"},{\"type\":\"click\",\"name\":\"赞一下我们\",\"key\":\"V1001_GOOD\"}]}]}";
-		post.setEntity(new StringEntity(menu, "UTF-8"));
 		post.setEntity(new UrlEncodedFormEntity(nvps));
 		post.setURI(new URI(url));
 		HttpResponse response = httpClient.execute(post);
 		return response;
 	}
 
+	public static HttpResponse HttpsPost(String url, String cookie) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
+		HttpPost post = new HttpPost();
+		post.addHeader(new BasicHeader("Cookie", cookie));
+		post.setURI(new URI(url));
+		HttpResponse response = httpClient.execute(post);
+		return response;
+	}
+
 	/**
+	 * 创建ssl链接
 	 * 
 	 * @return
 	 */

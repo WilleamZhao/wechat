@@ -1,14 +1,9 @@
 package com.sourcod.wechat.service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,11 +20,16 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.sourcod.wechat.model.AccessTokenModel;
+import com.sourcod.wechat.model.JsonMsgLogin;
+import com.sourcod.wechat.model.JsonMsgRandCode;
 import com.sourcod.wechat.util.ConfigUtil;
-import com.sourcod.wechat.util.EncryptionUtil;
+import com.sourcod.wechat.util.Dama2Util;
 import com.sourcod.wechat.util.GeneralUtil;
 import com.sourcod.wechat.util.HttpClientUtil;
+import com.sourcod.wechat.util.MemCached;
+import com.sourcod.wechat.util.OSSUtil;
 import com.sourcod.wechat.util.WechatApiUrl;
+import com.sourcod.wechat.util.constants.Constants;
 
 @Service("trainService")
 public class TrainService {
@@ -74,7 +74,7 @@ public class TrainService {
 	 * @return
 	 */
 	public String createMenu() {
-		String menu = "{     \"button\":[     {	          \"type\":\"click\",          \"name\":\"今日歌曲\",          \"key\":\"V1001_TODAY_MUSIC\"      },      {           \"name\":\"菜单\",           \"sub_button\":[           {	               \"type\":\"view\",               \"name\":\"搜索\",               \"url\":\"http://www.soso.com/\"            },            {               \"type\":\"view\",               \"name\":\"视频\",               \"url\":\"http://v.qq.com/\"            },            {               \"type\":\"click\",               \"name\":\"赞一下我们\",               \"key\":\"V1001_GOOD\"            }]       }] }";
+		// String menu = "{     \"button\":[     {	          \"type\":\"click\",          \"name\":\"今日歌曲\",          \"key\":\"V1001_TODAY_MUSIC\"      },      {           \"name\":\"菜单\",           \"sub_button\":[           {	               \"type\":\"view\",               \"name\":\"搜索\",               \"url\":\"http://www.soso.com/\"            },            {               \"type\":\"view\",               \"name\":\"视频\",               \"url\":\"http://v.qq.com/\"            },            {               \"type\":\"click\",               \"name\":\"赞一下我们\",               \"key\":\"V1001_GOOD\"            }]       }] }";
 		HttpResponse response = null;
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		nvps.add(new BasicNameValuePair("access_token", access_token));
@@ -84,102 +84,40 @@ public class TrainService {
 			String httpStr = EntityUtils.toString(entity, "utf-8");
 			System.out.println(httpStr);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "";
 	}
 
-	public static void login12306(String username, String password) throws IOException {
-		String cookieKey = "";
-		int count = 1;
-		long countTrue = 0;
-		long requestAVETime = 0;
-		long requestTime = 0;
-		long maxTime = 0;
-		long minTime = 0;
-
-		// String username = "yjwan521";
-		// String password = "OoOo0000";
-		String timeout = "30";
-		String appID = "44963";
-		String key = "b887c0169e0da6fed09fb316c9793946";
-		TrainService ticketService = new TrainService();
+	/**
+	 * 登录12306方法
+	 * 
+	 * @param username
+	 * @param password
+	 * @throws IOException
+	 */
+	public static void login12306(String openId, String username, String password) {
+		String cookieKey = openId;
 		String url = TrainService.init12306(cookieKey);
-		long startTime = new Date().getTime();
-		String serverUrl = "http://api.dama2.com:7766/app/d2Url";
-		String sign = EncryptionUtil.getSign(key + username + url);
-		String pwd = EncryptionUtil.EncoderByMd5(key + EncryptionUtil.EncoderByMd5(EncryptionUtil.EncoderByMd5(username) + EncryptionUtil.EncoderByMd5(password)));
-		// 310 选择图片, 42图片数字组合
-		/*NameValuePair[] validateCodeParam = { new NameValuePair("appID", appID), new NameValuePair("user", username),
-				new NameValuePair("pwd", pwd), new NameValuePair("type", "287"), new NameValuePair("timeout", timeout),
-				new NameValuePair("url", URLEncoder.encode(url, "utf-8")), new NameValuePair("sign", sign) };
-		PostMethod pm = Tool12306Util.getPostByHttpClient(serverUrl, validateCodeParam, "");
-		String result = null;
+		String randCode = "";
 		try {
-			result = pm.getResponseBodyAsString();
+			randCode = Dama2Util.getVaildateCode(url);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(result);
-		JSONObject json = Tool12306Util.stringToJson(result);
-		String id = json.get("id").toString();
-		System.out.println(id);
-		sign = EncryptionUtil.EncoderByMd5(key + username + id).substring(0, 8);
-		String resultServerUrl = "http://api.dama2.com:7766/app/d2Result";
-		NameValuePair[] validateCodeParam1 = { new NameValuePair("appID", appID), new NameValuePair("user", username),
-				new NameValuePair("pwd", pwd), new NameValuePair("id", id), new NameValuePair("sign", sign) };
-		pm = Tool12306Util.getPostByHttpClient(resultServerUrl, validateCodeParam1, "");
-		result = pm.getResponseBodyAsString();
-		System.out.println(result);*/
-		// String validateCode = Tool12306Util.getValidateCode("310", url);
-		// Tool12306Util.getValidateCode("310", url);
-
-		/*String randCode = "";
-		String[] randCodes = Tool12306Util.stringToJson(result).getString("result").split("\\|");
-		for (int j = 0; j < randCodes.length; j++) {
-			// randCode += randCodes[j] + ",";
-			int q = 1;
-			for (String rands : randCodes[j].split(",")) {
-				if (q % 2 == 0) {
-					randCode += Integer.parseInt(rands) - 30 + ",";
-				} else {
-					randCode += rands + ",";
-				}
-				q++;
-			}
-		}*/
-		/*randCode = randCode.substring(0, randCode.length() - 1);
+		randCode = randCode.substring(0, randCode.length() - 1);
 		System.out.println(randCode);
-		ResponseData result1 = ticketService.login(userid, "dingruzheng", "nishishui302153", randCode, "sjrand");
-		if ("00000".equals(result1.getReturnCode())) {
-			countTrue++;
+		boolean isLogin = TrainService.login(cookieKey, username, password, randCode);
+		if (isLogin) {
+			// 登录成功
 		} else {
-			String reportErrorUrl = "http://api.dama2.com:7766/app/d2ReportError";
-			NameValuePair[] reportErrorParam = { new NameValuePair("appID", appID), new NameValuePair("user", username),
-					new NameValuePair("pwd", pwd), new NameValuePair("id", id), new NameValuePair("sign", sign) };
-			pm = Tool12306Util.getPostByHttpClient(reportErrorUrl, reportErrorParam, "");
-			result = pm.getResponseBodyAsString();
-			System.out.println("报告结果" + result);
-		}*/
-		// ticketService.loginOut(userid);
-		// Thread.sleep(5000);
-
-		String qingqiushijian = "验证码平均请求时间" + requestAVETime / 10000 + "秒,最大请求时间" + maxTime / 1000 + "秒,最小请求时间"
-				+ minTime / 1000;
-		System.out.println(qingqiushijian);
-		// 创建一个数值格式化对象
-		NumberFormat numberFormat = NumberFormat.getInstance();
-
-		// 设置精确到小数点后2位
-
-		numberFormat.setMaximumFractionDigits(2);
-		String result = numberFormat.format((float) countTrue / (float) count * 100);
-		String zql = "验证码正确率统计" + result + "%";
-		System.out.println(zql);
+			// 登录失败
+			Dama2Util.reportError(url, "");
+		}
 	}
 
 	/**
@@ -192,30 +130,27 @@ public class TrainService {
 	 * @return 验证码地址
 	 */
 	public static String init12306(String cookieKey) {
-		logger.info("开始初始化12306,进入登陆12306页面");
-		logger.info("初始化12306传入参数: cookieKey=" + cookieKey);
+		logger.info("开始初始化12306: cookieKey=" + cookieKey);
 		HttpResponse get = null;
 		// cookieKey非空验证
 		if (StringUtils.isEmpty(cookieKey)) {
 			logger.info("用户cookieKey为空");
 			return "";
 		}
+
 		// 1. 访问初始化登陆URL
 		try {
 			get = HttpClientUtil.HttpsGet(ConfigUtil.getValueByKey("LOGIN_INIT_URL"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Https请求错误", e);
+			return "";
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		if (get == null) {
-			logger.info("初始化get请求错误");
+			logger.error("Https请求错误", e);
 			return "";
 		}
-		// 2. 获取cookie
-		String cookie = "";
-		// this.getCookie(get);
 
+		// 2. 获取cookie
+		String cookie = TrainService.getCookie(get);
 		if (StringUtils.isEmpty(cookie)) {
 			logger.info("获取cookie为空");
 			return "";
@@ -223,8 +158,8 @@ public class TrainService {
 		logger.info("获取的Cookie：" + cookie);
 
 		// 3. 把cookie保存到memcached.
-		String cookieKeyid = "hitu_cookieKey_" + cookieKey;
-		// MemCached.addCookie(cookie, cookieKeyid);
+		String cookieKeyid = "sourcod_cookieKey_" + cookieKey;
+		MemCached.set(cookie, cookieKeyid);
 
 		// 4. 生成验证码并返回
 		logger.info("初始化12306页面成功");
@@ -280,6 +215,190 @@ public class TrainService {
 			return "";
 		}
 	}
-	
-	
+
+	/**
+	 * 登录12306 1. 转换验证码坐标 2. 在memcached中获取cookieKey 3. 验证验证码是否正确 4. 验证用户名，密码是否正确
+	 * 5. 请求登录URL
+	 * 
+	 * @author zcj
+	 * @time 2016-10-21 09:59:25
+	 * @param cookieKey
+	 *            cookieKey
+	 * @param username
+	 *            12306用户名
+	 * @param password
+	 *            12306密码
+	 * @param randCode
+	 *            验证码坐标
+	 * @param sessionId
+	 *            sessionID
+	 * @param rand
+	 *            rand
+	 * @return
+	 */
+	public static boolean login(String cookieKey, String username, String password, String randCode) {
+		logger.info("开始登录12306");
+		logger.info("传入参数cookieKey=" + cookieKey + "验证码坐标" + randCode);
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		// 转换点击坐标
+		if (randCode.indexOf("null") > -1) {
+			logger.info("验证码错误");
+			return false;
+		}
+
+		// 用户ID非空验证
+		if (StringUtils.isEmpty(cookieKey)) {
+			logger.info("cookieKey为空");
+			return false;
+		}
+		// 12306用户名非空验证
+		if (StringUtils.isEmpty(username)) {
+			logger.info("用户12306登录名为空");
+			return false;
+		}
+		// 12306密码非空验证
+		if (StringUtils.isEmpty(password)) {
+			logger.info("用户12306密码为空");
+			return false;
+		}
+		// 验证码坐标非空验证
+		if (StringUtils.isEmpty(randCode)) {
+			logger.info("验证码坐标为空");
+			return false;
+		}
+
+		boolean isok = false;
+		String result = "";
+		HttpResponse response = null;
+		// 在memcached中获取cookie
+		String cookie = MemCached.get("sourcodcookieKey_" + cookieKey).toString();
+		if (StringUtils.isEmpty(cookie)) {
+			logger.info("cookie为空");
+			return false;
+		}
+
+		// 3. 验证验证码是否正确
+		logger.info("开始验证,验证码是否正确!");
+		nvps.add(new BasicNameValuePair("randCode", randCode));
+		nvps.add(new BasicNameValuePair("rand", "sjrand"));
+		isok = TrainService.validateCodeParam(ConfigUtil.getValueByKey("CHECK_CODE_URL"), nvps, cookie);
+		if (isok) {
+			logger.info("验证码错误,请重新登录.");
+			return false;
+		}
+		logger.info("验证验证码成功!");
+
+		// 4. 验证用户名，密码是否正确
+		logger.info("开始验证用户名密码");
+		nvps = new ArrayList<NameValuePair>();
+		nvps.add(new BasicNameValuePair(Constants.LOGIN_PARAMS_RANDCODE, randCode));
+		nvps.add(new BasicNameValuePair(Constants.LOGIN_PARAMS_USERNAME, username));
+		nvps.add(new BasicNameValuePair(Constants.LOGIN_PARAMS_PASSWORD, username));
+		try {
+			response = HttpClientUtil.HttpsPost(ConfigUtil.getValueByKey("LOGIN_AYSN_SUGGEST_URL"), nvps, cookie);
+			result = EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			logger.error("验证用户名密码异常", e);
+			return false;
+		}
+		logger.info("返回信息:" + result);
+		JsonMsgLogin json = null;
+		try {
+			json = GeneralUtil.StringToJson(result, JsonMsgLogin.class);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		if (!"true".equals(json.getStatus()) || json.getData() == null || json.getMessages().length != 0
+				|| !"Y".equals(json.getData().getLoginCheck())) {
+			logger.info("验证用户名,密码失败");
+			if (json.getMessages().length != 0 && "登录名不存在。".equals(json.getMessages())) {
+				return false;
+			}
+			return false;
+		}
+		logger.info("验证用户名,密码验证成功");
+
+		// 5. 请求登录URL
+		logger.info("开始请求登录URL");
+		try {
+			HttpClientUtil.HttpsPost(ConfigUtil.getValueByKey("LOGIN_URL"), cookie);
+		} catch (Exception e) {
+			logger.error("请求登录URL异常", e);
+			return false;
+		}
+		logger.info("登录成功");
+		return true;
+	}
+
+	/**
+	 * 验证验证码是否正确
+	 * 
+	 * @param url
+	 * @param cookie
+	 * @param param
+	 * @return
+	 */
+	public static boolean validateCodeParam(String url, List<NameValuePair> nvps, String cookie) {
+		logger.info("开始验证验证码");
+		try {
+			HttpResponse pm = HttpClientUtil.HttpsPost(url, nvps, cookie);
+			String result = null;
+			result = GeneralUtil.getString(pm.getEntity().getContent());
+			JsonMsgRandCode json = GeneralUtil.StringToJson(result, JsonMsgRandCode.class);
+			if (json.getData() == null) {
+				return false;
+			}
+			String msg = json.getData().getMsg();
+			// 验证失败返回失败原因(FALSE,EXPIRED)
+			if (!"true".equals(json.getStatus()) || !"TRUE".equals(msg)) {
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("验证码验证异常", e);
+			return false;
+		}
+	}
+
+	/**
+	 * 获取验证码
+	 * 
+	 * @author zcj
+	 * @time 2016-10-18 18:16:28
+	 * @param refCode
+	 *            刷新代码
+	 * @param cookie
+	 *            cookie
+	 * @return 获取验证码图片地址,图片宽高
+	 */
+	public static Map<String, String> saveValidateCode(String refCode, String cookie) {
+		Map<String, String> map = null;
+		String url = null;
+		if ("0".equals(refCode)) {
+			url = ConfigUtil.getValueByKey("LOGIN_PASSCODE_URL");
+		} else if ("1".equals(refCode)) {
+			url = ConfigUtil.getValueByKey("ORDER_PASSCODE_URL");
+		} else {
+			logger.info("当前刷新代码不存在");
+		}
+		HttpResponse get = null;
+		try {
+			get = HttpClientUtil.HttpsGet(url, cookie);
+		} catch (IOException e) {
+			logger.error("", e);
+		} catch (URISyntaxException e) {
+			logger.error("", e);
+		}
+		String imageUrl = null;
+		try {
+			imageUrl = OSSUtil.uploadOSS("hitu-12306-validate", "", get.getEntity().getContent());
+		} catch (IOException e) {
+			logger.error("保存验证码失败", e);
+		}
+		map = new HashMap<String, String>();
+		map.put("imageUrl", imageUrl);
+		logger.info("验证码保存成功,地址:" + imageUrl);
+		return map;
+	}
+
 }

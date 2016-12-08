@@ -1,7 +1,7 @@
 package com.sourcod.wechat.model;
 
 /**
- * TODO
+ * 打码兔json类
  * @author willeam
  * @time 2016-12-07 16:19:29
  */

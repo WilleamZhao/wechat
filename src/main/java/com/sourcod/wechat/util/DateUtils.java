@@ -262,9 +262,15 @@ public class DateUtils {
         return new Timestamp(c.getTimeInMillis());
     }
     
+    public static String getDate(String format) {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		Calendar cal = Calendar.getInstance();
+		return formatter.format(cal.getTime());
+	}
     
     
     /** This class should not be instantiated. */
     private DateUtils() {
+    	
     }
 }

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sourcod.wechat.model.MessageModel;
+import com.thoughtworks.xstream.XStream;
 
 /**
  * 通用工具类
@@ -92,7 +93,7 @@ public class GeneralUtil {
 	}
 
 	/**
-	 * TODO 
+	 * TODO
 	 * 
 	 * @author zcj
 	 * @time 2016-12-07 16:08:10
@@ -123,6 +124,7 @@ public class GeneralUtil {
 
 	/**
 	 * 处理返回文件流
+	 * 
 	 * @author willeam
 	 * @time 2016-12-07 16:13:26
 	 * @param is
@@ -133,10 +135,22 @@ public class GeneralUtil {
 		BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		StringBuffer buffer = new StringBuffer();
 		String line;
-		while ((line = in.readLine()) != null){
+		while ((line = in.readLine()) != null) {
 			buffer.append(line + "\n");
 		}
 		return buffer.toString();
+	}
+
+	public static Object getXml(InputStream input) {
+		XStream xstream = new XStream();
+		xstream.alias("xml", MessageModel.class);
+		return xstream.fromXML(input, MessageModel.class);
+	}
+	
+	public static Object getXml(String input) {
+		XStream xstream = new XStream();
+		xstream.alias("xml", MessageModel.class);
+		return xstream.fromXML(input);
 	}
 
 	public static void main(String[] args) throws IOException {
