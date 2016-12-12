@@ -12,6 +12,8 @@
                         
 	<!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
 	<context:component-scan base-package="com.sourcod.wechat.controller" />
+	<!-- 自动扫描 -->
+	<context:component-scan base-package="com.sourcod.wechat.service" />
 	<!-- <context:component-scan base-package="com.sourcod.wechat.service"></context:component-scan>
 	<context:component-scan base-package="com.sourcod.wechat.dao"></context:component-scan> -->
 	
