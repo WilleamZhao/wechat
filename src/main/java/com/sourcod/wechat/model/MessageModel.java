@@ -38,7 +38,7 @@ public class MessageModel implements Serializable {
 	private String PicUrl; // 图片链接
 	private String Url; // 点击图文消息跳转链接
 	private String Encrypt; // 密文
-	private String msg_signature;
+	private String Event; // 事件类型，subscribe(订阅)、unsubscribe(取消订阅)
 
 	public String getToUserName() {
 		return ToUserName;
@@ -216,12 +216,12 @@ public class MessageModel implements Serializable {
 		Encrypt = encrypt;
 	}
 
-	public String getMsg_signature() {
-		return msg_signature;
+	public String getEvent() {
+		return Event;
 	}
 
-	public void setMsg_signature(String msg_signature) {
-		this.msg_signature = msg_signature;
+	public void setEvent(String event) {
+		Event = event;
 	}
 
 }

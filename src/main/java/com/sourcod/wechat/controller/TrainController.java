@@ -1,15 +1,13 @@
 package com.sourcod.wechat.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.sourcod.wechat.model.MessageModel;
 import com.sourcod.wechat.service.TrainService;
+import com.sourcod.wechat.util.ConfigUtil;
 import com.sourcod.wechat.util.EncryptionUtil;
 import com.sourcod.wechat.util.GeneralUtil;
 import com.sourcod.wechat.util.aes.AesException;
@@ -58,7 +53,8 @@ public class TrainController {
 	 */
 	@RequestMapping(value = "/index", method = { RequestMethod.GET, RequestMethod.POST })
 	public String toIndex(HttpServletRequest request, HttpServletResponse response) {
-		logger.info(request.getRequestURL().toString());
+		logger.info("start{}", request.getRequestURL().toString());
+		//
 		boolean isGet = request.getMethod().toLowerCase().equals("get");
 		String timestamp = request.getParameter("timestamp");
 		String nonce = request.getParameter("nonce");
@@ -66,12 +62,11 @@ public class TrainController {
 		String signature = request.getParameter("signature");
 		String encryptType = request.getParameter("encrypt_type");
 		String msgSignature = request.getParameter("msg_signature");
-		logger.info("aaasdsdaasdas{}", msgSignature);
-		String token = "wechatpub";
-		String appId = "wxcb206180144624c9";
-		String encodingAesKey = "6KhFDnsk8jWxwUEsO0yxJtXcqxXAvKFwihm3I5wrhum";
+		String token = ConfigUtil.getValueByKey("token");
+		String appId = ConfigUtil.getValueByKey("appId");
+		String encodingAesKey = ConfigUtil.getValueByKey("encodingAeskey");
+		logger.info("acccccccccccccccc{}", encodingAesKey);
 		if (isGet) {
-			
 			// 字典序排序
 			ArrayList<String> list = new ArrayList<String>();
 			list.add(nonce);
@@ -84,16 +79,21 @@ public class TrainController {
 				GeneralUtil.write(response, echostr);
 			}
 		} else {
+			
 			try {
-				ServletInputStream in = request.getInputStream();
-				
+				BufferedReader in = request.getReader();
 				StringBuilder xmlMsg = new StringBuilder();
-				byte[] b = new byte[4096];
-				for (int n; (n = in.read(b)) != -1;) {
-					xmlMsg.append(new String(b, 0, n, "UTF-8"));
+				String line = null;
+				while ((line = in.readLine()) != null) {
+					xmlMsg.append(line);
 				}
 				logger.debug("获取到xml{}", xmlMsg.toString());
 				MessageModel mm = (MessageModel) GeneralUtil.getXml(xmlMsg.toString());
+				System.out.println(GeneralUtil.toXml(mm));
+				if("aes".equals(encryptType)){
+					logger.info("aes");
+					
+				}
 				String encrypt = mm.getEncrypt();
 
 				logger.debug("获取到明文{}", encrypt);
@@ -117,12 +117,12 @@ public class TrainController {
 					mm1.setCreateTime(mm.getCreateTime());
 					mm1.setMsgType(mm.getMsgType());
 					String returnMsg = GeneralUtil.toXml(mm1);
-					logger.info("fanhuixiaoxi{}",returnMsg);
+					logger.info("fanhuixiaoxi{}", returnMsg);
 					result2 = pc.encryptMsg(returnMsg, timestamp, nonce);
 				} catch (AesException e) {
 					logger.error("cuowu", e);
 				}
-				logger.info("fanhuixiaoxi{}",result2);
+				logger.info("fanhuixiaoxi{}", result2);
 				GeneralUtil.write(response, result2);
 			} catch (IOException e) {
 				e.printStackTrace();

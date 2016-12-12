@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.zip.GZIPInputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -146,13 +147,19 @@ public class GeneralUtil {
 		xstream.alias("xml", MessageModel.class);
 		return xstream.fromXML(input, MessageModel.class);
 	}
-	
+
 	public static Object getXml(String input) {
 		XStream xstream = new XStream();
 		xstream.alias("xml", MessageModel.class);
-		return xstream.fromXML(input);
+		return xstream.fromXML(input, MessageModel.class);
 	}
-	
+
+	public static Object getXml(Reader input) {
+		XStream xstream = new XStream();
+		xstream.alias("xml", MessageModel.class);
+		return xstream.fromXML(input, MessageModel.class);
+	}
+
 	public static String toXml(MessageModel mm) {
 		XStream xstream = new XStream();
 		xstream.alias("xml", MessageModel.class);
