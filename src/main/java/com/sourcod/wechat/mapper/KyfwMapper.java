@@ -4,5 +4,9 @@ import org.apache.ibatis.annotations.Select;
 
 public interface KyfwMapper {
 
-	public int selectCount();
+	
+	int selectCount();
+	
+	@Select("select count(*) from kyfw_order")
+	int select();
 }

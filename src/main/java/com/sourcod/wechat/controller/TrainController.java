@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.sourcod.wechat.model.MessageModel;
+import com.sourcod.wechat.service.KyfwService;
 import com.sourcod.wechat.service.TrainService;
 import com.sourcod.wechat.util.ConfigUtil;
 import com.sourcod.wechat.util.EncryptionUtil;
@@ -37,6 +38,9 @@ public class TrainController {
 
 	@Autowired
 	private TrainService trainService;
+	
+	@Autowired
+	private KyfwService kyfwService;
 
 	public TrainController() {
 		System.out.println("UserController");
@@ -141,6 +145,13 @@ public class TrainController {
 	public String createMenu(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = trainService.createMenu();
 		GeneralUtil.write(response, accessToken);
+		return null;
+	}
+	
+	@RequestMapping(value = "text", method = RequestMethod.GET)
+	public String Text(HttpServletRequest request, HttpServletResponse response){
+		int i = kyfwService.selectCount();
+		GeneralUtil.write(response, String.valueOf(i));
 		return null;
 	}
 

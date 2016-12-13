@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sourcod.wechat.mapper.KyfuMapper">
-	<select id="selectCount" parameterType="int" resultType="int">
+<mapper namespace="com.sourcod.wechat.mapper.KyfwMapper">
+	<select id="selectCount" resultType="int">
 		select count(*) from kyfw_order
 	</select>
 </mapper>
