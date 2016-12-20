@@ -86,6 +86,25 @@ public class HttpClientUtil {
 		HttpResponse response = httpClient.execute(post);
 		return response;
 	}
+	
+	public static HttpResponse HttpsPost(String url, List<NameValuePair> nvps, StringEntity body) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
+		HttpPost post = new HttpPost();
+		post.setEntity(body);
+		post.setEntity(new UrlEncodedFormEntity(nvps));
+		post.setURI(new URI(url));
+		HttpResponse response = httpClient.execute(post);
+		return response;
+	}
+	
+	public static HttpResponse HttpsPost(String url, StringEntity body) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
+		HttpPost post = new HttpPost();
+		post.setEntity(body);
+		post.setURI(new URI(url));
+		HttpResponse response = httpClient.execute(post);
+		return response;
+	}
 
 	public static HttpResponse HttpsPost(String url, String cookie) throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();

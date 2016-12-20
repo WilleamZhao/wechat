@@ -10,6 +10,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +152,7 @@ public class GeneralUtil {
 	public static Object getXml(String input) {
 		XStream xstream = new XStream();
 		xstream.alias("xml", MessageModel.class);
-		return xstream.fromXML(input, MessageModel.class);
+		return xstream.fromXML(input);
 	}
 
 	public static Object getXml(Reader input) {
@@ -164,6 +165,16 @@ public class GeneralUtil {
 		XStream xstream = new XStream();
 		xstream.alias("xml", MessageModel.class);
 		return xstream.toXML(mm);
+	}
+	
+	/**
+	 * urf-8 转 iso-8859-1
+	 * @author willeam
+	 * @param str	要转换的字符串
+	 * @return		转换后的字符串
+	 */
+	public static String utf8ToIso88591(String str){
+		return StringUtils.newStringIso8859_1(StringUtils.getBytesUtf8(str));
 	}
 
 	public static void main(String[] args) throws IOException {
