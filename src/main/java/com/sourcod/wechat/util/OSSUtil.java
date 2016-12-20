@@ -10,7 +10,9 @@ import com.aliyun.oss.OSSClient;
 
 /**
  * 阿里云OSS工具类
+ * 
  * @author willeam
+ * @time 2016-12-20 17:06:12
  *
  */
 public class OSSUtil {
@@ -21,8 +23,7 @@ public class OSSUtil {
 	private static int socketTimeout = Integer.parseInt(ConfigUtil.getValueByKey("ossSocketTimeout"));
 	private static int maxErrorRetry = Integer.parseInt(ConfigUtil.getValueByKey("ossMaxErrorRetry"));
 	private static ClientConfiguration conf = null;
-	private static OSSClient client = null;
-	static{
+	static {
 		// 上传到远程图片服务器
 		conf = new ClientConfiguration();
 		// 设置OSSClient使用的最大连接数，默认1024
@@ -31,12 +32,11 @@ public class OSSUtil {
 		conf.setSocketTimeout(socketTimeout);
 		// 设置失败请求重试次数，默认3次
 		conf.setMaxErrorRetry(maxErrorRetry);
-		client = new OSSClient(endpoint, accessKeyId, accessKeySecret, conf);
 	}
-	
-	
+
 	public static String uploadOSS(String BucketName, String name, InputStream is) {
 		// 创建OSSClient实例
+		OSSClient client = new OSSClient(endpoint, accessKeyId, accessKeySecret, conf);
 		// 使用访问OSS
 		if (StringUtils.isEmpty(name)) {
 			name = DateUtils.getDate("yyyyMMdd") + "/" + DateUtils.getDate("yyyyMMddHHmmssSSSS")
