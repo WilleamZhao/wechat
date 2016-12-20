@@ -27,8 +27,9 @@ public class Dama2Util {
 	private static String serverUrl = ConfigUtil.getValueByKey("dama2ServerUrl");
 	private static String resultServerUrl = ConfigUtil.getValueByKey("dama2ResultServerUrl");
 	private static String reportErrorUrl = ConfigUtil.getValueByKey("dama2ReportErrorUrl");
-	private static String appID = ConfigUtil.getValueByKey("dama2AppID");;
-	private static String timeout = ConfigUtil.getValueByKey("dama2Timeout");;
+	private static String appID = ConfigUtil.getValueByKey("dama2AppID");
+	private static String timeout = ConfigUtil.getValueByKey("dama2Timeout");
+	private static String type = ConfigUtil.getValueByKey("dama2Timeout");
 	private static String pwd = EncryptionUtil.MD5(key + EncryptionUtil.EncoderByMd5(EncryptionUtil.EncoderByMd5(username) + EncryptionUtil.EncoderByMd5(password))).substring(0, 8);
 
 	public Dama2Util(String imageUrl) {
@@ -55,7 +56,7 @@ public class Dama2Util {
 		nvps.add(new BasicNameValuePair("appID", appID));
 		nvps.add(new BasicNameValuePair("user", username));
 		nvps.add(new BasicNameValuePair("pwd", pwd));
-		nvps.add(new BasicNameValuePair("type", "287"));
+		nvps.add(new BasicNameValuePair("type", type));
 		nvps.add(new BasicNameValuePair("timeout", timeout));
 		nvps.add(new BasicNameValuePair("sign", sign));
 		nvps.add(new BasicNameValuePair("url", URLEncoder.encode(url, "utf-8")));
@@ -82,7 +83,6 @@ public class Dama2Util {
 		}
 		String[] randCodes = dm2.getReuslt().split("\\|");
 		for (int j = 0; j < randCodes.length; j++) {
-			// randCode += randCodes[j] + ",";
 			int q = 1;
 			for (String rands : randCodes[j].split(",")) {
 				if (q % 2 == 0) {

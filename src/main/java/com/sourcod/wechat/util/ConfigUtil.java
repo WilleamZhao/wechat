@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+
 /**
  * 配置文件工具类
  * 

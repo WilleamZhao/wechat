@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -107,9 +108,21 @@ public class WechatServiceImpl implements WechatService {
 		String event = mm.getEvent();
 		// 事件推送
 		if("event".equals(msgType)){
+			// 关注
 			if("subscribe".equals(event)){
+				// 扫描二维码后关注
+				if("subscribe".equals(event) && StringUtils.isNotEmpty(mm.getEventKey())){
+					
+				}
 				
-			} else if("unsubscribe".equals(event)){
+			}
+			// 取消关注
+			if("unsubscribe".equals(event)){
+				
+			}
+			
+			// 用户已关注扫描二维码时的事件推送
+			if("SCAN".equals(event)){
 				
 			}
 		}

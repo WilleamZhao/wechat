@@ -1,6 +1,7 @@
 package com.sourcod.wechat.controller;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,6 +20,7 @@ import com.sourcod.wechat.service.WechatService;
 import com.sourcod.wechat.util.ConfigUtil;
 import com.sourcod.wechat.util.EncryptionUtil;
 import com.sourcod.wechat.util.GeneralUtil;
+import com.sourcod.wechat.util.Tool12306Util;
 
 /**
  * 火车Controller
@@ -110,9 +112,10 @@ public class WechatController {
 	}
 
 	@RequestMapping(value = "text", method = RequestMethod.GET)
-	public String Text(HttpServletRequest request, HttpServletResponse response) {
-		int i = wechatService.selectCount();
-		GeneralUtil.write(response, String.valueOf(i));
+	public String Text(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// int i = wechatService.selectCount();
+		String imageUrl = Tool12306Util.init("openid");
+		GeneralUtil.write(response, imageUrl);
 		return null;
 	}
 
