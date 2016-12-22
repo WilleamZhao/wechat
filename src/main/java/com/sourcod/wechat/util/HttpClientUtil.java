@@ -12,12 +12,13 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.StringEntity;
@@ -25,6 +26,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +39,31 @@ import org.slf4j.LoggerFactory;
 public class HttpClientUtil {
 	private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
-	public void HttpGet() {
-
+	public static HttpResponse HttpGet(String url, List<NameValuePair> nvps) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet get = new HttpGet();
+		get.setURI(new URI(url + "?" + EntityUtils.toString(new UrlEncodedFormEntity(nvps))));
+		HttpResponse response = httpClient.execute(get);
+		return response;
+	}
+	
+	public static HttpResponse HttpGet(String url, List<NameValuePair> nvps, Header[] headers) throws IOException, URISyntaxException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet get = new HttpGet();
+		get.setURI(new URI(url + "?" + EntityUtils.toString(new UrlEncodedFormEntity(nvps))));
+		get.setHeaders(headers);
+		HttpResponse response = httpClient.execute(get);
+		return response;
 	}
 
-	public void HttpPost() {
-
+	public static HttpResponse HttpPost(String url, List<NameValuePair> nvps)
+			throws URISyntaxException, ClientProtocolException, IOException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpPost post = new HttpPost();
+		post.setEntity(new UrlEncodedFormEntity(nvps));
+		post.setURI(new URI(url));
+		HttpResponse response = httpClient.execute(post);
+		return response;
 	}
 
 	public static HttpResponse HttpsGet(String url) throws IOException, URISyntaxException {
@@ -52,7 +73,7 @@ public class HttpClientUtil {
 		HttpResponse response = httpClient.execute(get);
 		return response;
 	}
-	
+
 	public static HttpResponse HttpsGet(String url, String cookie) throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
 		HttpGet get = new HttpGet();
@@ -86,8 +107,9 @@ public class HttpClientUtil {
 		HttpResponse response = httpClient.execute(post);
 		return response;
 	}
-	
-	public static HttpResponse HttpsPost(String url, List<NameValuePair> nvps, StringEntity body) throws IOException, URISyntaxException {
+
+	public static HttpResponse HttpsPost(String url, List<NameValuePair> nvps, StringEntity body)
+			throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
 		HttpPost post = new HttpPost();
 		post.setEntity(body);
@@ -96,7 +118,7 @@ public class HttpClientUtil {
 		HttpResponse response = httpClient.execute(post);
 		return response;
 	}
-	
+
 	public static HttpResponse HttpsPost(String url, StringEntity body) throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClientUtil.createSSLClientDefault();
 		HttpPost post = new HttpPost();

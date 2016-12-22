@@ -262,6 +262,12 @@ public class DateUtils {
         return new Timestamp(c.getTimeInMillis());
     }
     
+    public static String getDate() {
+		SimpleDateFormat formatter = new SimpleDateFormat(PATTERN_YMD);
+		Calendar cal = Calendar.getInstance();
+		return formatter.format(cal.getTime());
+	}
+    
     public static String getDate(String format) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		Calendar cal = Calendar.getInstance();

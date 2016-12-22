@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.sourcod.wechat.model.MessageModel;
+import com.sourcod.wechat.service.ExpressService;
 import com.sourcod.wechat.service.WechatService;
 import com.sourcod.wechat.util.ConfigUtil;
 import com.sourcod.wechat.util.EncryptionUtil;
@@ -36,6 +37,9 @@ public class WechatController {
 
 	@Autowired
 	private WechatService wechatService;
+	
+	@Autowired
+	private ExpressService expressService;
 
 	public WechatController() {
 		System.out.println("UserController");
@@ -81,7 +85,7 @@ public class WechatController {
 				
 				returnMM.setToUserName(mm.getFromUserName());
 				returnMM.setFromUserName(mm.getToUserName());
-				returnMM.setContent(GeneralUtil.utf8ToIso88591("请输入12306用户名"));
+				returnMM.setContent(GeneralUtil.utf8ToIso88591(expressService.getExpressInfo(mm.getContent())));
 				returnMM.setCreateTime(mm.getCreateTime());
 				returnMM.setMsgType("text");
 				String returnMsg = GeneralUtil.toXml(returnMM);

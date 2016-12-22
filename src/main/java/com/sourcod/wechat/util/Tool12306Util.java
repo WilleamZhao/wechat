@@ -1,11 +1,9 @@
 package com.sourcod.wechat.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,6 +117,69 @@ public class Tool12306Util {
 		HttpResponse get = HttpClientUtil.HttpsGet(url, cookie);
 		InputStream in = get.getEntity().getContent();
 		return OSSUtil.uploadOSS("sourcod-document", "", in);
+	}
+	
+	// 查询余票信息，站站查询，列表显示	
+	public String queryYp(String purpose_codes,String date,String fromStation,String toStation,String sort,String trainType) throws Exception {
+
+		String resultMessage = "";
+		String prev = "";
+		String next = "";
+		String today = DateUtils.getDate();//今天日期
+		String nextDate = DateUtils.addDays(1).toString();//明天日期
+		String no59Date = DateUtils.addDays(59).toString();//59天后日期
+		String prvdate = DateUtils.addDays(-1).toString();//昨天日期
+
+		/*// 查询站点名称
+		String fsname = stationsMapper.findStationNameByCode(fromStation);
+		String tsname = stationsMapper.findStationNameByCode(toStation);
+
+		if(sort==null || sort.equals("")){
+			sort="start";
+		}
+		//如果日期是今天,上一天就是今天，下一天是下一天
+		if(today.equals(date)){
+			prev = date;
+			next = nextDate;
+		}
+		//如果日期是59天后，下一天是59天日期，上一天是59天的上一天，
+		else if(no59Date.equals(date)){
+			prev = prvdate;
+			next = date;
+			//否则，就是日期的上一天，下一天
+		}else{
+			prev = prvdate;
+			next = nextDate;
+		}
+
+		//调用12306接口查询
+		List<LeftTicket> yplist = null;
+		try {
+			yplist = HttpsTicket.yupiaoQuery(purpose_codes,date, fromStation, toStation,sort,trainType);
+			//如果没查询到，再查询一次
+			if(yplist==null || yplist.size()==0){
+				yplist = HttpsTicket.yupiaoQuery(purpose_codes,date, fromStation, toStation,sort,trainType);	
+			}
+		} catch (Exception e) {
+			//如果出现异常，再查询一次
+			yplist = HttpsTicket.yupiaoQuery(purpose_codes,date, fromStation, toStation,sort,trainType);
+			//e.printStackTrace();
+		}finally{
+			//不管是否得到正确结果，都执行
+			if(yplist==null || yplist.size()==0){
+				yplist = HttpsTicket.yupiaoQuery(purpose_codes,date, fromStation, toStation,sort,trainType);	
+			}
+		}
+		String data = "";
+		if(yplist==null || yplist.size()==0){
+			data = "[]";
+		}else{
+			data =	JsonUtil.dump(yplist);
+		}
+		resultMessage = "{\"result\":\"success\",\"data\":{\"datas\":"+data+",\"prev\":\""+prev+"\",\"next\":\""+next+"\",\"fsname\":\""+fsname+"\",\"tsname\":\""+tsname+"\",\"date\":\""+date+"\"}}";
+		//}
+		return resultMessage;*/
+		return "";
 	}
 
 }
