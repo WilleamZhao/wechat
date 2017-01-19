@@ -81,7 +81,7 @@ public class Dama2Util {
 			result = GeneralUtil.getString(response.getEntity().getContent());
 			dm2 = GeneralUtil.StringToJson(result, Dama2Model.class);
 		}
-		String[] randCodes = dm2.getReuslt().split("\\|");
+		String[] randCodes = dm2.getResult().split("\\|");
 		for (int j = 0; j < randCodes.length; j++) {
 			int q = 1;
 			for (String rands : randCodes[j].split(",")) {

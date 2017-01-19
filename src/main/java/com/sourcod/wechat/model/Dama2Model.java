@@ -2,6 +2,7 @@ package com.sourcod.wechat.model;
 
 /**
  * 打码兔json类
+ * 
  * @author willeam
  * @time 2016-12-07 16:19:29
  */
@@ -9,7 +10,7 @@ public class Dama2Model {
 	private String ret;
 	private String id;
 	private String cookie;
-	private String reuslt;
+	private String result;
 	private String sign;
 
 	public String getRet() {
@@ -36,12 +37,12 @@ public class Dama2Model {
 		this.cookie = cookie;
 	}
 
-	public String getReuslt() {
-		return reuslt;
+	public String getResult() {
+		return result;
 	}
 
-	public void setReuslt(String reuslt) {
-		this.reuslt = reuslt;
+	public void setResult(String result) {
+		this.result = result;
 	}
 
 	public String getSign() {
