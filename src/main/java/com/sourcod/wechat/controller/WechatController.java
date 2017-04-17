@@ -50,7 +50,6 @@ public class WechatController {
 	 * 
 	 * @param request
 	 * @param response
-	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = "/index", method = { RequestMethod.GET, RequestMethod.POST })
