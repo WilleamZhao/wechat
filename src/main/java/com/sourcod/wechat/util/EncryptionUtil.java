@@ -16,7 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-/**
+/**m
  * 加密算法工具类
  * 
  * @author willeam
